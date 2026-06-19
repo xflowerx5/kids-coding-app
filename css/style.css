@@ -516,7 +516,7 @@ a {
   z-index: 1;
   text-align: center;
   width: 100%;
-  max-width: 380px;
+  max-width: min(380px, 92vw);
 }
 
 .splash-app-icon {
@@ -691,7 +691,7 @@ a {
   text-align: center;
   border: 2px solid rgba(255, 255, 255, 0.35);
   width: 100%;
-  max-width: 320px;
+  max-width: min(320px, 90vw);
   box-shadow: var(--shadow-xl);
 }
 .fc-code-label {
@@ -729,7 +729,7 @@ a {
   flex-direction: column;
   gap: var(--space-sm);
   width: 100%;
-  max-width: 320px;
+  max-width: min(320px, 90vw);
 }
 .fc-divider {
   display: flex;
@@ -738,7 +738,7 @@ a {
   color: rgba(255, 255, 255, 0.5);
   font-size: var(--text-sm);
   width: 100%;
-  max-width: 320px;
+  max-width: min(320px, 90vw);
 }
 .fc-divider::before,
 .fc-divider::after {
@@ -752,10 +752,11 @@ a {
   display: flex;
   gap: var(--space-sm);
   width: 100%;
-  max-width: 320px;
+  max-width: min(320px, 90vw);
 }
 .fc-input {
   flex: 1;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.38);
   border-radius: var(--radius-md);
@@ -783,10 +784,11 @@ a {
   background: white;
   color: #6366f1;
   border-radius: var(--radius-md);
-  padding: 14px 20px;
+  padding: clamp(10px, 3vw, 14px) clamp(12px, 4vw, 20px);
   font-size: var(--text-base);
   font-weight: 900;
   flex-shrink: 0;
+  white-space: nowrap;
   box-shadow: var(--shadow-md);
 }
 
@@ -1308,7 +1310,7 @@ a {
 .mc-content {
   display: flex; flex-direction: column;
   align-items: center; gap: var(--space-lg);
-  width: 100%; max-width: 360px; z-index: 1; text-align: center;
+  width: 100%; max-width: min(360px, 92vw); z-index: 1; text-align: center;
 }
 
 /* 별 장식 */
@@ -1473,7 +1475,7 @@ a {
 
 .bc-content {
   display: flex; flex-direction: column; align-items: center;
-  gap: var(--space-md); width: 100%; max-width: 360px;
+  gap: var(--space-md); width: 100%; max-width: min(360px, 92vw);
   z-index: 1; text-align: center;
 }
 .bc-char   { font-size: 5.5rem; line-height: 1; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2)); }
