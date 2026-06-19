@@ -436,6 +436,17 @@ const Child = (() => {
       const code   = App.Storage.get('familyCode');
       const course = App.Storage.get('selectedCourse');
       if (code && typeof DB !== 'undefined') DB.init(code);
+
+      /* PWA 설치 안내 — 첫 방문 + 미설치 상태일 때만 */
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+      const skipped   = App.Storage.get('pwaInstallSkipped', false);
+      const installed = App.Storage.get('pwaInstalled', false);
+      if (!isStandalone && !skipped && !installed) {
+        App.showScreen('pwa-install');
+        return;
+      }
+
       if (code && course) App.showScreen('mission-map');
       else if (code)      App.showScreen('character-select');
       else                App.showScreen('family-code');
