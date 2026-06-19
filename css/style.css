@@ -556,13 +556,13 @@ a {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-md);
+  padding: clamp(10px, 3vw, 16px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
   flex: 1;
-  max-width: 150px;
+  max-width: min(150px, 42vw);
   border: 2px solid rgba(255, 255, 255, 0.45);
   box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.3);
   transition: transform var(--transition-bounce);
@@ -573,7 +573,7 @@ a {
 }
 
 .char-card svg {
-  width: 88px;
+  width: min(88px, 28vw);
   height: auto;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
 }
@@ -821,26 +821,26 @@ a {
 .cs-title { font-size: var(--text-3xl); font-weight: 900; color: white; text-shadow: 0 3px 12px rgba(0,0,0,0.2); }
 .cs-subtitle { font-size: var(--text-base); color: rgba(255,255,255,0.88); margin-top: var(--space-xs); }
 
-.cs-cards { display: flex; gap: var(--space-lg); width: 100%; justify-content: center; z-index: 1; }
+.cs-cards { display: flex; gap: clamp(8px, 4vw, 24px); width: 100%; justify-content: center; z-index: 1; }
 .cs-card {
   background: rgba(255,255,255,0.26);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl) var(--space-md);
+  padding: clamp(12px, 4vw, 32px) clamp(8px, 3vw, 16px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
+  gap: clamp(8px, 2vw, 16px);
   flex: 1;
-  max-width: 158px;
+  max-width: min(158px, 44vw);
   border: 2.5px solid rgba(255,255,255,0.5);
   box-shadow: var(--shadow-xl);
   cursor: pointer;
   transition: transform var(--transition-bounce), box-shadow var(--transition-fast), border-color var(--transition-fast);
 }
 .cs-card:active { transform: scale(0.93); }
-.cs-card svg { width: 108px; height: auto; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.16)); }
+.cs-card svg { width: min(108px, 34vw); height: auto; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.16)); }
 .cs-card-name { font-size: var(--text-lg); font-weight: 900; color: white; text-shadow: 0 2px 6px rgba(0,0,0,0.18); }
 .cs-card-grade {
   font-size: var(--text-sm);
@@ -1591,11 +1591,11 @@ a {
 
 /* 키패드 3×4 그리드 */
 .pp-keypad {
-  display: grid; grid-template-columns: repeat(3, 72px);
-  gap: 12px; margin-top: var(--space-sm);
+  display: grid; grid-template-columns: repeat(3, min(72px, 26vw));
+  gap: clamp(8px, 2.5vw, 12px); margin-top: var(--space-sm);
 }
 .pp-key {
-  width: 72px; height: 72px; border-radius: 50%;
+  width: min(72px, 26vw); height: min(72px, 26vw); border-radius: 50%;
   background: rgba(255,255,255,0.18);
   border: 1.5px solid rgba(255,255,255,0.3);
   color: white; font-size: var(--text-2xl); font-weight: 700;
@@ -1605,7 +1605,7 @@ a {
   backdrop-filter: blur(8px);
 }
 .pp-key:active { transform: scale(0.88); background: rgba(255,255,255,0.35); }
-.pp-key-empty  { width: 72px; height: 72px; }
+.pp-key-empty  { width: min(72px, 26vw); height: min(72px, 26vw); }
 
 .pp-reset-link {
   background: none; border: none; color: rgba(255,255,255,0.65);
