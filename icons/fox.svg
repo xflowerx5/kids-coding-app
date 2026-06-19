@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 130">
+  <!-- 왼쪽 귀 -->
+  <polygon points="22,58 38,14 54,52" fill="#FF7A00"/>
+  <polygon points="28,55 38,22 48,52" fill="#CC4400" opacity="0.45"/>
+  <!-- 오른쪽 귀 -->
+  <polygon points="66,52 82,14 98,58" fill="#FF7A00"/>
+  <polygon points="72,52 82,22 92,55" fill="#CC4400" opacity="0.45"/>
+  <!-- 얼굴 기본 (주황 원) -->
+  <ellipse cx="60" cy="78" rx="46" ry="44" fill="#FF8C00"/>
+  <!-- 하얀 뺨 패치 (양쪽) -->
+  <ellipse cx="25" cy="85" rx="18" ry="14" fill="white" opacity="0.88"/>
+  <ellipse cx="95" cy="85" rx="18" ry="14" fill="white" opacity="0.88"/>
+  <!-- 이마 흰 패치 -->
+  <ellipse cx="60" cy="60" rx="14" ry="9" fill="white" opacity="0.55"/>
+  <!-- 왼쪽 눈 흰자 -->
+  <circle cx="44" cy="72" r="11" fill="white"/>
+  <!-- 오른쪽 눈 흰자 -->
+  <circle cx="76" cy="72" r="11" fill="white"/>
+  <!-- 왼쪽 눈동자 -->
+  <circle cx="45" cy="73" r="7.5" fill="#1E1B2E"/>
+  <!-- 오른쪽 눈동자 -->
+  <circle cx="77" cy="73" r="7.5" fill="#1E1B2E"/>
+  <!-- 눈 반짝임 (큰) -->
+  <circle cx="48" cy="70" r="2.8" fill="white"/>
+  <circle cx="80" cy="70" r="2.8" fill="white"/>
+  <!-- 눈 반짝임 (작은) -->
+  <circle cx="43" cy="75" r="1.3" fill="white" opacity="0.75"/>
+  <circle cx="75" cy="75" r="1.3" fill="white" opacity="0.75"/>
+  <!-- 코 -->
+  <ellipse cx="60" cy="87" rx="7" ry="5.5" fill="#CC4400"/>
+  <!-- 입 -->
+  <path d="M 50 93 Q 60 101 70 93" stroke="#CC4400" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <!-- 볼 홍조 (왼쪽) -->
+  <circle cx="28" cy="84" r="9" fill="#FF5722" opacity="0.32"/>
+  <!-- 볼 홍조 (오른쪽) -->
+  <circle cx="92" cy="84" r="9" fill="#FF5722" opacity="0.32"/>
+  <!-- 꼬리 힌트 (하단 중앙) -->
+  <ellipse cx="60" cy="120" rx="22" ry="10" fill="white" opacity="0.85"/>
+  <ellipse cx="60" cy="123" rx="10" ry="5" fill="#FF8C00" opacity="0.5"/>
+</svg>

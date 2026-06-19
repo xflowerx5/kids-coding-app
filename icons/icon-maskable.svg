@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="maskBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#a78bfa"/>
+      <stop offset="50%"  stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+  </defs>
+  <!-- maskable: 배경을 꽉 채움 (안전 영역 안에 콘텐츠) -->
+  <rect width="512" height="512" fill="url(#maskBg)"/>
+  <!-- 별 (안전 영역 내 배치: 전체의 80% 이내) -->
+  <path d="M256 120 L287 208 L384 208 L308 264 L339 352 L256 298 L173 352 L204 264 L128 208 L225 208 Z"
+        fill="white" opacity="0.95"/>
+  <path d="M256 152 L277 220 L348 220 L292 260 L313 328 L256 290 L199 328 L220 260 L164 220 L235 220 Z"
+        fill="#FBBF24" opacity="0.4"/>
+</svg>

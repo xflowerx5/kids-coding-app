@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#FF8C00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="코딩스티커">
+  <meta name="description" content="미션을 완료하고 스티커를 모아요!">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <title>코딩 스티커</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="loading-screen">
+      <div class="loading-spinner">⭐</div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK — 설정 완료 후 아래 두 줄 주석 해제 (FIREBASE_SETUP.md 참고) -->
+  <!--
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  -->
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/puzzle.js"></script>
+  <script src="js/sticker.js"></script>
+  <script src="js/child.js"></script>
+  <script src="js/parent.js"></script>
+  <script src="js/firebase.js"></script>
+</body>
+</html>

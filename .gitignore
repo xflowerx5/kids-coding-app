@@ -1,0 +1,10 @@
+# 테스트/임시 파일
+__phase*.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+*.swp
