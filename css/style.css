@@ -1846,8 +1846,7 @@ a {
 html {
   overflow-x: hidden;
 }
-#app, .screen {
-  max-width: 100vw;
+.screen {
   overflow-x: hidden;
 }
 
