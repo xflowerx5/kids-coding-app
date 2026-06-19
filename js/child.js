@@ -437,12 +437,10 @@ const Child = (() => {
       const course = App.Storage.get('selectedCourse');
       if (code && typeof DB !== 'undefined') DB.init(code);
 
-      /* PWA 설치 안내 — 첫 방문 + 미설치 상태일 때만 */
+      /* PWA 설치 안내 — 설치된 상태(standalone)가 아니면 항상 표시 */
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true;
-      const skipped   = App.Storage.get('pwaInstallSkipped', false);
-      const installed = App.Storage.get('pwaInstalled', false);
-      if (!isStandalone && !skipped && !installed) {
+      if (!isStandalone) {
         App.showScreen('pwa-install');
         return;
       }

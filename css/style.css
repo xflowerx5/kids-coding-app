@@ -1835,3 +1835,88 @@ a {
   font-size: 0.8rem; color: rgba(255,255,255,0.7);
   text-align: center; margin: 0;
 }
+
+/* ============================================================
+   반응형 — 좁은 화면 공통 (갤럭시 폴드 커버 등)
+   ============================================================ */
+
+/* 가로 스크롤 원천 차단 */
+html {
+  overflow-x: hidden;
+}
+#app, .screen {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* ---- 360px 이하: 일반 좁은 폰 ---- */
+@media (max-width: 360px) {
+  :root {
+    --space-md: 12px;
+    --space-lg: 18px;
+    --space-xl: 24px;
+    --text-2xl: 1.35rem;
+    --text-3xl: 1.7rem;
+  }
+
+  /* 캐릭터 카드 SVG 축소 */
+  .cs-card { max-width: 130px; padding: var(--space-md) var(--space-sm); gap: var(--space-sm); }
+  .cs-card svg { width: 88px; }
+  .cs-cards { gap: var(--space-md); }
+
+  /* PIN 키패드 */
+  .pp-keypad { grid-template-columns: repeat(3, 62px); gap: 10px; }
+  .pp-key, .pp-key-empty { width: 62px; height: 62px; }
+  .pp-key { font-size: 1.2rem; }
+
+  /* 스플래시 캐릭터 카드 */
+  .char-card svg { width: 68px; }
+
+  /* 미션맵 패딩 */
+  .mm-list { padding: var(--space-md); }
+}
+
+/* ---- 300px 이하: 갤럭시 폴드 커버 화면 ---- */
+@media (max-width: 300px) {
+  :root {
+    --space-md: 10px;
+    --space-lg: 14px;
+    --space-xl: 18px;
+    --text-base: 0.88rem;
+    --text-lg:   0.98rem;
+    --text-xl:   1.1rem;
+    --text-2xl:  1.2rem;
+    --text-3xl:  1.5rem;
+    --text-4xl:  2rem;
+  }
+
+  /* 캐릭터 카드: 세로로 쌓기 */
+  .cs-cards { flex-direction: column; align-items: center; gap: var(--space-sm); }
+  .cs-card  { max-width: 200px; width: 100%; flex-direction: row; padding: var(--space-sm) var(--space-md); }
+  .cs-card svg { width: 60px; flex-shrink: 0; }
+
+  /* PIN 키패드 더 축소 */
+  .pp-keypad { grid-template-columns: repeat(3, 52px); gap: 8px; }
+  .pp-key, .pp-key-empty { width: 52px; height: 52px; }
+  .pp-key { font-size: 1.1rem; }
+  .pp-dots { gap: 12px; }
+  .pp-dot  { width: 14px; height: 14px; }
+
+  /* 스플래시 */
+  .splash-characters { flex-direction: column; gap: var(--space-sm); }
+  .char-card { flex-direction: row; padding: var(--space-sm); gap: var(--space-sm); }
+  .char-card svg { width: 52px; }
+
+  /* 스티커 그리드: 최대 4열 */
+  .sb-grid { grid-template-columns: repeat(min(var(--sb-cols, 5), 4), 1fr) !important; }
+
+  /* 미션맵 */
+  .mm-list { padding: var(--space-sm); gap: var(--space-sm); }
+  .mission-card { padding: var(--space-sm); }
+
+  /* 보상 설정 목표 수 */
+  .rs-goal-display { font-size: var(--text-3xl); min-width: 50px; }
+
+  /* 미션 완료/보드 완성 데코 줄이기 */
+  .mc-star-burst, .bc-deco { font-size: 1.2rem; }
+}
