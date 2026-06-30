@@ -187,7 +187,9 @@ const DB = (() => {
     upd[course] = {
       completedMissions: App.Storage.get(`completed_${course}`, []),
       totalStickers:     App.Storage.get(`totalStickers_${course}`, 0),
-      boardsCompleted:   App.Storage.get(`boardsCompleted_${course}`, 0),
+      rewardStickers:    App.Storage.get(`rewardStickers_${course}`, 0),
+      pendingReward:     App.Storage.get(`pendingReward_${course}`, 0),
+      confirmedReward:   App.Storage.get(`confirmedReward_${course}`, 0),
       lastActivity:      ts,
     };
     try { await _ref().set(upd, { merge: true }); }
@@ -220,15 +222,4 @@ const DB = (() => {
 
   /* ---- 공개 API ---- */
   return {
-    init,
-    isOnline,
-    initFamily,
-    push,
-    pushCourse,
-    pushSettings,
-    pushPin,
-    startListening,
-    stopListening,
-  };
-
-})();
+   

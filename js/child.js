@@ -1,6 +1,6 @@
 /* ============================================================
    코딩 스티커 — Child Screens
-   Phase 2: 가족코드 / 캐릭터선택 / 미션로드맵 / 퍼즐 미션
+   Phase 2+A: 가족코드 / 캐릭터선택 / 미션로드맵 / 퍼즐 / 외부링크 미션
    ============================================================ */
 
 const Child = (() => {
@@ -38,6 +38,12 @@ const Child = (() => {
   function _courseEmoji(course){ return course === 'fox' ? '🦊' : '🐰'; }
   function _courseName(course) { return course === 'fox' ? '여우 코스' : '토끼 코스'; }
   function _charEmoji(course)  { return course === 'fox' ? '🦊' : '🐰'; }
+
+  /* ---- 미션 타입 라벨 ---- */
+  function _missionTypeLabel(m) {
+    if (m.type === 'external') return `🔗 ${m.tool || '외부 도구'}`;
+    return '🎮 인앱 퍼즐';
+  }
 
   /* ============================================================
      화면 1: 가족 코드
@@ -134,12 +140,12 @@ const Child = (() => {
         <button class="cs-card anim-slideUp" style="animation-delay:0.1s" onclick="Child.selectCourse('fox')">
           ${App.foxSVG}
           <span class="cs-card-name">🦊 여우</span>
-          <span class="cs-card-grade">초5 · 8단계</span>
+          <span class="cs-card-grade">초5</span>
         </button>
         <button class="cs-card anim-slideUp" style="animation-delay:0.2s" onclick="Child.selectCourse('rabbit')">
           ${App.rabbitSVG}
           <span class="cs-card-name">🐰 토끼</span>
-          <span class="cs-card-grade">초3 · 8단계</span>
+          <span class="cs-card-grade">초3</span>
         </button>
       </div>
     </div>
@@ -155,16 +161,19 @@ const Child = (() => {
   /* ============================================================
      화면 3: 미션 로드맵
      ============================================================ */
-  App.registerScreen('mission-map', () => {
+  App.registerScreen('mission-map', async () => {
+    await Puzzle.waitReady();
+
     const course    = App.Storage.get('selectedCourse', 'fox');
     const theme     = _theme(course);
     const bgClass   = _bgClass(course);
     const missions  = Puzzle.getMissions(course);
     const completed = _getCompleted(course);
     const stickers  = App.Storage.get(`totalStickers_${course}`, 0);
+    const rewardStickers = App.Storage.get(`rewardStickers_${course}`, 0);
     const total     = missions.length;
     const doneCount = completed.length;
-    const pct       = Math.round((doneCount / total) * 100);
+    const pct       = total > 0 ? Math.round((doneCount / total) * 100) : 0;
 
     const cardsHTML = missions.map(m => {
       const done    = completed.includes(m.id);
@@ -186,11 +195,16 @@ const Child = (() => {
           <div class="mission-card-body">
             <div class="mission-card-step">${m.id}단계</div>
             <div class="mission-card-title">${m.title}</div>
-            <div class="mission-card-tool">🎮 인앱 퍼즐</div>
+            <div class="mission-card-tool">${_missionTypeLabel(m)}</div>
           </div>
           <span class="mission-card-status">${statusIcon}</span>
         </button>`;
     }).join('');
+
+    const miniProgress = stickers % 30;
+    const rewardBadge = rewardStickers > 0
+      ? `<button class="mm-reward-pill" onclick="App.showScreen('sticker-board',{course:'${course}'})">🎖️ ×${rewardStickers}</button>`
+      : '';
 
     return `
     <div class="screen screen-mission-map">
@@ -200,7 +214,10 @@ const Child = (() => {
           <span class="mm-course-icon">${_courseEmoji(course)}</span>
           <span class="mm-course-name">${_courseName(course)}</span>
         </div>
-        <button class="mm-sticker-pill" onclick="App.showScreen('sticker-board',{course:'${course}'})">⭐ ${stickers}</button>
+        <div class="mm-header-pills">
+          <button class="mm-sticker-pill" onclick="App.showScreen('sticker-board',{course:'${course}'})">⭐ ${miniProgress}/30</button>
+          ${rewardBadge}
+        </div>
       </div>
 
       <div class="mm-progress-wrap ${bgClass}">
@@ -223,12 +240,18 @@ const Child = (() => {
     </div>`;
   });
 
-  function openMission(id) {
+  async function openMission(id) {
     Sound.click();
-    const course  = App.Storage.get('selectedCourse', 'fox');
+    const course = App.Storage.get('selectedCourse', 'fox');
+    await Puzzle.waitReady();
     const mission = Puzzle.getMission(course, id);
     if (!mission) return;
-    App.showScreen('mission-puzzle', { mission, course });
+
+    if (mission.type === 'external') {
+      App.showScreen('mission-external', { mission, course });
+    } else {
+      App.showScreen('mission-puzzle', { mission, course });
+    }
   }
 
   function goParentMode() {
@@ -236,12 +259,12 @@ const Child = (() => {
     if (typeof Parent !== 'undefined' && Parent.showPinScreen) {
       Parent.showPinScreen();
     } else {
-      App.showToast('부모 모드는 Phase 4에서 추가돼요! 👨‍👩‍👧');
+      App.showToast('부모 모드는 준비 중이에요! 👨‍👩‍👧');
     }
   }
 
   /* ============================================================
-     화면 4: 퍼즐 미션
+     화면 4: 퍼즐 미션 (type: "puzzle")
      ============================================================ */
   App.registerScreen('mission-puzzle', ({ mission, course }) => {
     const theme    = _theme(course);
@@ -249,17 +272,16 @@ const Child = (() => {
     const charEm   = _charEmoji(course);
     const done     = _getCompleted(course).includes(mission.id);
 
-    /* 퍼즐 엔진 초기화 */
     Puzzle.init(mission, course, charEm, {
-      onSuccess: () => _onPuzzleSuccess(course, mission),
-      onFail:    (reason) => _onPuzzleFail(reason),
+      onSuccess: () => _onMissionSuccess(course, mission),
+      onFail:    (reason) => _onMissionFail(reason),
     });
 
-    const gridHTML     = Puzzle.renderGrid();
-    const seqHTML      = Puzzle.renderSequence();
-    const ctrlHTML     = Puzzle.renderControls(!!mission.allowRepeat);
+    const gridHTML  = Puzzle.renderGrid();
+    const seqHTML   = Puzzle.renderSequence();
+    const ctrlHTML  = Puzzle.renderControls(!!mission.allowRepeat);
 
-    const completedBar = done
+    const actionBar = done
       ? `<div class="pz-done-bar">✅ 이미 완료했어요! <button class="pz-retry-btn" onclick="Child.openMission(${mission.id})">다시 풀기</button></div>`
       : `<div class="pz-action-bar">
            <button id="pz-run-btn" class="pz-run-btn ${bgClass}" onclick="PuzzleScreen.runPuzzle()">▶ 실행!</button>
@@ -268,7 +290,6 @@ const Child = (() => {
 
     return `
     <div class="screen screen-mission-puzzle">
-      <!-- 헤더 -->
       <div class="mp-header ${bgClass}">
         <button class="btn-back" onclick="App.showScreen('mission-map')" aria-label="뒤로">←</button>
         <div class="mp-header-info">
@@ -278,30 +299,118 @@ const Child = (() => {
         <button class="btn-mute" id="btn-mute" aria-label="소리">🔊</button>
       </div>
 
-      <!-- 설명 -->
       <div class="mp-desc-row">
         <p class="mp-desc">${mission.description}</p>
         <button class="mp-tip-btn" onclick="Child.toggleTip(this)" aria-label="팁 보기">💡</button>
       </div>
       <div class="mp-tip" id="mp-tip" hidden>${mission.tip}</div>
 
-      <!-- 격자 -->
       <div class="mp-grid-wrap">
         ${gridHTML}
       </div>
 
-      <!-- 시퀀스 -->
       <div id="pz-sequence-container">
         ${seqHTML}
       </div>
 
-      <!-- 컨트롤 -->
       ${ctrlHTML}
-
-      <!-- 실행/지우기 -->
-      ${completedBar}
+      ${actionBar}
     </div>`;
   });
+
+  /* ============================================================
+     화면 5: 외부링크 미션 (type: "external")
+     — 가이드 체크리스트 전부 완료 시에만 스티커 버튼 활성화
+     ============================================================ */
+  App.registerScreen('mission-external', ({ mission, course }) => {
+    const bgClass  = _bgClass(course);
+    const theme    = _theme(course);
+    const done     = _getCompleted(course).includes(mission.id);
+
+    const guideItems = (mission.guide || []).map((step, i) => `
+      <label class="me-step-item" for="me-step-${i}">
+        <input type="checkbox" id="me-step-${i}" class="me-step-check"
+               onchange="Child.onCheckStep('${course}', ${mission.id})" />
+        <span class="me-step-text">${step}</span>
+      </label>
+    `).join('');
+
+    const toolBtn = mission.toolUrl
+      ? `<a href="${mission.toolUrl}" target="_blank" rel="noopener" class="me-tool-btn ${bgClass}" onclick="Sound.click()">
+           🔗 ${mission.tool || '도구'} 열기
+         </a>`
+      : '';
+
+    const actionArea = done
+      ? `<div class="me-done-bar">✅ 이미 완료했어요! 잘했어요! 🎉</div>`
+      : `<button id="me-sticker-btn" class="me-sticker-btn" disabled
+               onclick="Child.claimExternalSticker('${course}', ${mission.id})">
+           🎖️ 스티커 받기
+           <span class="me-sticker-hint">체크리스트를 모두 완료하면 활성화돼요</span>
+         </button>`;
+
+    return `
+    <div class="screen screen-mission-external">
+      <div class="mp-header ${bgClass}">
+        <button class="btn-back" onclick="App.showScreen('mission-map')" aria-label="뒤로">←</button>
+        <div class="mp-header-info">
+          <div class="mp-step-label">${mission.id}단계</div>
+          <div class="mp-mission-title">${mission.emoji} ${mission.title}</div>
+        </div>
+        <button class="btn-mute" id="btn-mute" aria-label="소리">🔊</button>
+      </div>
+
+      <div class="me-body">
+        <p class="me-desc">${mission.description}</p>
+
+        ${toolBtn}
+
+        <div class="me-checklist-card">
+          <div class="me-checklist-title">📋 미션 체크리스트</div>
+          <p class="me-checklist-sub">아래 단계를 모두 완료하면 스티커를 받을 수 있어요!</p>
+          <div class="me-steps">
+            ${guideItems}
+          </div>
+        </div>
+
+        <div class="me-tip-card">
+          <span class="me-tip-icon">💡</span>
+          <p class="me-tip-text">${mission.tip || ''}</p>
+        </div>
+
+        ${actionArea}
+      </div>
+    </div>`;
+  });
+
+  /* 체크박스 변경 시 → 버튼 활성화 여부 갱신 */
+  function onCheckStep(course, missionId) {
+    const checkboxes = document.querySelectorAll('.me-step-check');
+    const allChecked = checkboxes.length > 0 && [...checkboxes].every(cb => cb.checked);
+    const btn = document.getElementById('me-sticker-btn');
+    if (!btn) return;
+
+    btn.disabled = !allChecked;
+    if (allChecked) {
+      btn.innerHTML = '🎖️ 스티커 받기!';
+      btn.classList.add('me-sticker-btn-ready');
+      Sound.unlock();
+      App.spawnParticles(['⭐','✨','🌟'], 6);
+    } else {
+      btn.innerHTML = `🎖️ 스티커 받기<span class="me-sticker-hint">체크리스트를 모두 완료하면 활성화돼요</span>`;
+      btn.classList.remove('me-sticker-btn-ready');
+    }
+  }
+
+  /* 외부링크 미션 스티커 수령 */
+  async function claimExternalSticker(course, missionId) {
+    await Puzzle.waitReady();
+    const mission = Puzzle.getMission(course, missionId);
+    if (!mission) return;
+    const btn = document.getElementById('me-sticker-btn');
+    if (btn) btn.disabled = true;
+    await _onMissionSuccess(course, mission);
+  }
 
   function toggleTip(btn) {
     const tip = document.getElementById('mp-tip');
@@ -313,153 +422,29 @@ const Child = (() => {
   }
 
   /* ============================================================
-     퍼즐 콜백
+     미션 성공 공통 처리 (퍼즐 / 외부링크 공용)
      ============================================================ */
-  async function _onPuzzleSuccess(course, mission) {
+  async function _onMissionSuccess(course, mission) {
     const alreadyDone = _getCompleted(course).includes(mission.id);
 
     Sound.missionComplete();
     App.spawnParticles(['⭐','✨','🌟','💫'], 14);
 
-    /* 스티커 지급 (첫 완료 시만) */
     if (!alreadyDone) {
       _addCompleted(course, mission.id);
-      const stickers = App.Storage.get(`totalStickers_${course}`, 0) + 1;
-      App.Storage.set(`totalStickers_${course}`, stickers);
+
+      const newTotal = App.Storage.get(`totalStickers_${course}`, 0) + 1;
+      App.Storage.set(`totalStickers_${course}`, newTotal);
       if (typeof DB !== 'undefined') DB.pushCourse(course);
 
-      /* 스티커 획득 효과음 (미션 완료음 후 딜레이) */
       setTimeout(() => Sound.stickerEarn(), 500);
 
-      /* confetti */
       if (typeof confetti === 'function') {
         confetti({ particleCount: 90, spread: 70, origin: { y: 0.5 } });
       }
 
       setTimeout(() => {
-        /* 스티커판 완성 여부 체크 */
-        if (Sticker.checkBoardComplete(course, stickers)) {
-          const boardNum = Math.floor(stickers / Sticker.getGoal(course));
-          App.Storage.set(`boardsCompleted_${course}`, boardNum);
-          App.showScreen('board-complete', { course, stickers, boardNum });
-        } else {
-          App.showScreen('mission-clear', { mission, course, stickers });
-        }
-      }, 900);
-    } else {
-      App.showToast('다시 풀었어요! 멋져요! 🎉');
-      setTimeout(() => App.showScreen('mission-map'), 1200);
-    }
-  }
-
-  function _onPuzzleFail(reason) {
-    Sound.error();
-    if (reason === 'wall') {
-      App.showToast('앗! 벽에 부딪혔어요 😢 다시 해봐요!');
-    } else {
-      App.showToast('별에 못 닿았어요! 명령을 수정해봐요 🤔');
-    }
-  }
-
-  /* ============================================================
-     화면 5: 미션 클리어
-     ============================================================ */
-  App.registerScreen('mission-clear', ({ mission, course, stickers }) => {
-    const theme    = _theme(course);
-    const bgClass  = _bgClass(course);
-    const missions = Puzzle.getMissions(course);
-    const nextId   = mission.id + 1;
-    const hasNext  = nextId <= missions.length;
-
-    const nextBtn = hasNext
-      ? `<button class="btn-primary mc-next-btn" onclick="Child.openMission(${nextId})">
-           다음 단계로 → ${missions[nextId - 1]?.emoji || ''}
-         </button>`
-      : `<button class="btn-primary mc-next-btn" onclick="App.showScreen('mission-map')">
-           미션 맵으로 🗺️
-         </button>`;
-
-    /* confetti 재실행 */
-    setTimeout(() => {
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 } });
-      }
-    }, 200);
-
-    return `
-    <div class="screen screen-mission-clear ${bgClass}">
-      <div class="mc-content">
-        <div class="mc-star-burst" aria-hidden="true">
-          <span class="mc-s1 anim-float">⭐</span>
-          <span class="mc-s2 anim-float">✨</span>
-          <span class="mc-s3 anim-float">🌟</span>
-          <span class="mc-s4 anim-float">💫</span>
-          <span class="mc-s5 anim-float">⭐</span>
-        </div>
-
-        <div class="mc-char anim-pop">${_charEmoji(course)}</div>
-        <h1 class="mc-title anim-slideUp">미션 완료!</h1>
-        <p class="mc-subtitle anim-slideUp" style="animation-delay:0.08s">
-          ${mission.emoji} ${mission.title}
-        </p>
-
-        <div class="mc-sticker-box anim-pop" style="animation-delay:0.15s">
-          <div class="mc-sticker-label">획득한 스티커</div>
-          <div class="mc-sticker-count">⭐ × 1</div>
-          <div class="mc-total">합계: ⭐ ${stickers}개</div>
-        </div>
-
-        <div class="mc-btns anim-slideUp" style="animation-delay:0.22s">
-          ${nextBtn}
-          <button class="btn-ghost mc-sticker-btn" onclick="App.showScreen('sticker-board',{course:'${course}',justEarned:true})">
-            ⭐ 스티커판 보기
-          </button>
-          <button class="btn-ghost mc-map-btn" onclick="App.showScreen('mission-map')">
-            미션 맵 보기 🗺️
-          </button>
-        </div>
-      </div>
-    </div>`;
-  });
-
-  /* ============================================================
-     App.start 오버라이드
-     ============================================================ */
-  App.start = function (btn) {
-    Sound.resume();
-    Sound.click();
-    if (btn) {
-      btn.disabled = true;
-      App.spawnParticles(['⭐', '✨', '💫', '🌟'], 10, btn);
-    }
-    setTimeout(() => {
-      const code   = App.Storage.get('familyCode');
-      const course = App.Storage.get('selectedCourse');
-      if (code && typeof DB !== 'undefined') DB.init(code);
-
-      /* PWA 설치 안내 — 설치된 상태(standalone)가 아니면 항상 표시 */
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
-      if (!isStandalone) {
-        App.showScreen('pwa-install');
-        return;
-      }
-
-      if (code && course) App.showScreen('mission-map');
-      else if (code)      App.showScreen('character-select');
-      else                App.showScreen('family-code');
-    }, 380);
-  };
-
-  /* ---- 공개 API ---- */
-  return {
-    copyCode,
-    confirmNewCode,
-    confirmInputCode,
-    selectCourse,
-    openMission,
-    goParentMode,
-    toggleTip,
-  };
-
-})();
+        /* 미니스티커 30개 달성 → 상품스티커 지급 */
+        if (newTotal % 30 === 0) {
+          const rewardCount = Math.floor(newTotal / 30);
+          App.Storage.set(`rewardStickers_${course}`, 

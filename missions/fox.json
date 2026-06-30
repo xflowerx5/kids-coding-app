@@ -1,143 +1,600 @@
 {
   "course": "fox",
   "label": "🦊 여우 코스",
-  "color": "fox",
-  "stages": [
+  "missions": [
     {
       "id": 1,
-      "emoji": "🃏",
-      "title": "화살표 카드 게임",
-      "description": "종이와 연필만 있으면 OK! 화살표로 길을 만들어서 캐릭터를 움직여봐요. 코딩의 핵심인 '알고리즘'을 직접 몸으로 경험해봐요.",
-      "tool": "없음",
-      "toolUrl": null,
-      "guide": [
-        "종이에 5×5 칸짜리 격자를 그려요",
-        "시작점(S)과 도착점(E)을 정해요",
-        "↑ ↓ ← → 화살표로 길을 표시해요",
-        "화살표 순서대로 손가락을 움직여서 도착하면 성공!",
-        "더 복잡한 미로를 만들어 난이도를 높여봐요"
-      ],
-      "tips": "같은 목적지에 도착하는 다른 경로를 찾아봐요. 코딩에서는 '더 짧은 경로'가 더 좋은 코드예요! 🧠",
-      "stickers": 1
+      "type": "puzzle",
+      "difficulty": 1,
+      "category": "sequencing",
+      "title": "한 방향으로 가요!",
+      "emoji": "➡️",
+      "description": "→ 버튼으로 여우를 별에 데려다줘요!",
+      "tip": "버튼을 눌러 명령을 추가하고 실행해봐요!",
+      "grid": {
+        "cols": 6,
+        "rows": 3
+      },
+      "start": {
+        "r": 1,
+        "c": 0
+      },
+      "goal": {
+        "r": 1,
+        "c": 5
+      },
+      "walls": [],
+      "maxCommands": 8,
+      "allowRepeat": false,
+      "solution": [
+        "R",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 2,
-      "emoji": "🐱",
-      "title": "고양이 움직이기",
-      "description": "Scratch에서 고양이 캐릭터가 키보드 방향키를 누르면 움직이게 만들어봐요! 이벤트와 동작 블록을 배울 수 있어요.",
-      "tool": "Scratch",
-      "toolUrl": "https://scratch.mit.edu",
-      "guide": [
-        "scratch.mit.edu에서 '만들기'를 눌러요",
-        "[이벤트] '↑ 키를 눌렀을 때' → [동작] 'y좌표 10 바꾸기' 연결",
-        "같은 방법으로 ↓(y -10) ←(x -10) →(x 10)도 만들어요",
-        "초록 깃발을 눌러서 방향키로 움직이는지 확인해요",
-        "화면 끝에서 벽에 닿으면 반대로 튕기게 추가해봐요"
+      "type": "puzzle",
+      "difficulty": 2,
+      "category": "navigation",
+      "title": "방향을 바꿔요!",
+      "emoji": "🔄",
+      "description": "→ ↑ ↓ ← 버튼을 모두 써서 여우를 별에 데려다줘요!",
+      "tip": "경로를 머릿속으로 먼저 그려보고 눌러봐요!",
+      "grid": {
+        "cols": 5,
+        "rows": 5
+      },
+      "start": {
+        "r": 4,
+        "c": 0
+      },
+      "goal": {
+        "r": 0,
+        "c": 4
+      },
+      "walls": [
+        {
+          "r": 2,
+          "c": 2
+        }
       ],
-      "tips": "x, y 좌표가 뭔지 알아볼까요? x는 가로 위치, y는 세로 위치예요. 수학이 코딩이랑 연결되네요! 📐",
-      "stickers": 1
+      "maxCommands": 10,
+      "allowRepeat": false,
+      "solution": [
+        "U",
+        "U",
+        "U",
+        "U",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 3,
+      "type": "puzzle",
+      "difficulty": 3,
+      "category": "navigation",
+      "title": "미로 탈출!",
       "emoji": "🌀",
-      "title": "미로 탈출 게임",
-      "description": "Scratch로 미로를 그리고, 캐릭터가 벽에 부딪히면 처음으로 돌아가는 미로 탈출 게임을 만들어봐요!",
-      "tool": "Scratch",
-      "toolUrl": "https://scratch.mit.edu",
-      "guide": [
-        "배경 페인트 에디터에서 미로를 직접 그려요",
-        "캐릭터 시작 위치를 설정해요 (x, y 좌표 사용)",
-        "[감지] '색에 닿았는가'로 벽 감지 → 시작 위치로 이동",
-        "도착점에 닿으면 '클리어!' 메시지와 함께 멈추게 해요",
-        "타이머로 몇 초 만에 탈출했는지 측정해봐요!"
+      "description": "벽이 많아요! 막히지 않고 별까지 가는 길을 찾아봐요.",
+      "tip": "벽에 부딪히면 다시 처음부터 시작해요. 천천히 생각해요!",
+      "grid": {
+        "cols": 6,
+        "rows": 5
+      },
+      "start": {
+        "r": 0,
+        "c": 0
+      },
+      "goal": {
+        "r": 4,
+        "c": 5
+      },
+      "walls": [
+        {
+          "r": 0,
+          "c": 2
+        },
+        {
+          "r": 0,
+          "c": 3
+        },
+        {
+          "r": 1,
+          "c": 0
+        },
+        {
+          "r": 1,
+          "c": 4
+        },
+        {
+          "r": 2,
+          "c": 2
+        },
+        {
+          "r": 2,
+          "c": 4
+        },
+        {
+          "r": 3,
+          "c": 2
+        },
+        {
+          "r": 4,
+          "c": 1
+        },
+        {
+          "r": 4,
+          "c": 2
+        },
+        {
+          "r": 4,
+          "c": 3
+        }
       ],
-      "tips": "타이머 기록을 저장해서 최고 기록을 갱신하는 기능을 추가해봐요 🏎️",
-      "stickers": 1
+      "maxCommands": 14,
+      "allowRepeat": false,
+      "solution": [
+        "R",
+        "D",
+        "R",
+        "R",
+        "D",
+        "D",
+        "R",
+        "R",
+        "D"
+      ]
     },
     {
       "id": 4,
-      "emoji": "🎮",
-      "title": "점수/목숨/레벨 게임",
-      "description": "점수, 목숨, 레벨이 있는 제대로 된 게임을 만들어봐요! 변수를 활용하면 어떤 게임이든 만들 수 있어요.",
-      "tool": "Scratch",
-      "toolUrl": "https://scratch.mit.edu",
-      "guide": [
-        "변수 3개를 만들어요: 점수, 목숨(초기값 3), 레벨",
-        "적 캐릭터에 닿으면 목숨 -1, 목숨이 0이면 게임 오버",
-        "아이템을 먹으면 점수 +10, 점수 100점마다 레벨 +1",
-        "레벨이 올라갈수록 적이 빨라지게 해요",
-        "최고 점수를 저장하는 기능을 추가해봐요!"
+      "type": "puzzle",
+      "difficulty": 3,
+      "category": "navigation",
+      "title": "더 복잡한 미로!",
+      "emoji": "🧩",
+      "description": "여러 방향 전환이 필요한 복잡한 미로예요. 도전해봐요!",
+      "tip": "한 번에 한 단계씩 추가하면서 실행해봐요!",
+      "grid": {
+        "cols": 7,
+        "rows": 6
+      },
+      "start": {
+        "r": 0,
+        "c": 0
+      },
+      "goal": {
+        "r": 5,
+        "c": 6
+      },
+      "walls": [
+        {
+          "r": 0,
+          "c": 3
+        },
+        {
+          "r": 1,
+          "c": 1
+        },
+        {
+          "r": 1,
+          "c": 3
+        },
+        {
+          "r": 1,
+          "c": 5
+        },
+        {
+          "r": 2,
+          "c": 1
+        },
+        {
+          "r": 2,
+          "c": 5
+        },
+        {
+          "r": 3,
+          "c": 1
+        },
+        {
+          "r": 3,
+          "c": 3
+        },
+        {
+          "r": 3,
+          "c": 5
+        },
+        {
+          "r": 4,
+          "c": 3
+        }
       ],
-      "tips": "게임을 친구에게 보여주고 어떤 점이 어렵고 재밌는지 물어봐요. 그게 바로 '게임 테스트'예요! 🕹️",
-      "stickers": 1
+      "maxCommands": 16,
+      "allowRepeat": false,
+      "solution": [
+        "R",
+        "R",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 5,
-      "emoji": "💻",
-      "title": "Code.org 퀴즈 앱",
-      "description": "Code.org App Lab에서 버튼을 누르면 반응하는 퀴즈 앱을 만들어봐요! 자바스크립트 코드를 처음 써보는 미션이에요.",
-      "tool": "Code.org App Lab",
-      "toolUrl": "https://studio.code.org/projects/applab",
-      "guide": [
-        "code.org에 가입 후 App Lab을 열어요",
-        "Design 탭에서 버튼 2개(O, X)와 텍스트 레이블을 배치해요",
-        "Code 탭에서 버튼 클릭 이벤트를 작성해요",
-        "정답이면 '맞았어요!', 오답이면 '다시 해봐요!' 텍스트를 바꿔요",
-        "퀴즈를 5문제 이상 만들어 if/else로 연결해봐요"
-      ],
-      "tips": "Scratch 블록과 App Lab 텍스트 코드가 얼마나 비슷한지 비교해봐요. 코딩 언어는 달라도 생각하는 방식은 같아요! 🤯",
-      "stickers": 1
+      "type": "puzzle",
+      "difficulty": 4,
+      "category": "loops",
+      "title": "반복 블록 입문!",
+      "emoji": "🔁",
+      "description": "🔁 반복 블록으로 같은 명령을 짧게 표현해봐요!",
+      "tip": "명령 6개 대신 반복 블록 1개로 만들어봐요!",
+      "grid": {
+        "cols": 7,
+        "rows": 4
+      },
+      "start": {
+        "r": 1,
+        "c": 0
+      },
+      "goal": {
+        "r": 1,
+        "c": 6
+      },
+      "walls": [],
+      "maxCommands": 4,
+      "allowRepeat": true,
+      "solution": [
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 6,
-      "emoji": "🐢",
-      "title": "Python Turtle 그림",
-      "description": "파이썬 거북이로 화면에 그림을 그려봐요! 반복문을 사용하면 복잡한 도형도 몇 줄로 만들 수 있어요.",
-      "tool": "Replit (Python)",
-      "toolUrl": "https://replit.com",
-      "guide": [
-        "replit.com에 가입 후 Python 프로젝트를 새로 만들어요",
-        "import turtle로 거북이를 불러와요",
-        "t = turtle.Turtle()로 거북이를 만들어요",
-        "t.forward(100), t.right(90) 으로 사각형을 그려봐요",
-        "for i in range(6): 로 육각형도 그려봐요!"
+      "type": "puzzle",
+      "difficulty": 4,
+      "category": "loops",
+      "title": "반복 + 미로!",
+      "emoji": "🌀",
+      "description": "반복 블록과 방향 전환을 함께 써서 미로를 빠져나가요!",
+      "tip": "같은 방향이 반복되면 묶어보세요!",
+      "grid": {
+        "cols": 6,
+        "rows": 6
+      },
+      "start": {
+        "r": 0,
+        "c": 0
+      },
+      "goal": {
+        "r": 5,
+        "c": 5
+      },
+      "walls": [
+        {
+          "r": 0,
+          "c": 3
+        },
+        {
+          "r": 1,
+          "c": 3
+        },
+        {
+          "r": 3,
+          "c": 2
+        },
+        {
+          "r": 4,
+          "c": 2
+        }
       ],
-      "tips": "for i in range(36): t.forward(10), t.right(10) 을 써보세요. 원이 나와요! 반복문의 마법이에요 ✨",
-      "stickers": 1
+      "maxCommands": 8,
+      "allowRepeat": true,
+      "solution": [
+        "R",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 7,
-      "emoji": "📝",
-      "title": "게임 기획서 작성",
-      "description": "만들고 싶은 게임을 글과 그림으로 설명하는 기획서를 써봐요! 프로 게임 개발자들도 코딩 전에 기획서를 먼저 만들어요.",
-      "tool": "없음",
-      "toolUrl": null,
-      "guide": [
-        "게임 제목과 장르를 정해요 (액션? 퍼즐? 스토리?)",
-        "주인공 캐릭터를 그리고 능력을 설명해요",
-        "게임 목표와 클리어 조건을 써요",
-        "화면 구성을 간단히 스케치해요",
-        "어떤 코딩 언어/툴로 만들지 계획해봐요"
+      "type": "puzzle",
+      "difficulty": 5,
+      "category": "debugging",
+      "title": "버그를 잡아라!",
+      "emoji": "🐛",
+      "description": "틀린 명령이 섞여 있어요. 버그를 찾아서 고쳐봐요!",
+      "tip": "명령을 하나씩 지워가며 어디서 막히는지 찾아봐요!",
+      "grid": {
+        "cols": 6,
+        "rows": 5
+      },
+      "start": {
+        "r": 0,
+        "c": 0
+      },
+      "goal": {
+        "r": 4,
+        "c": 5
+      },
+      "walls": [
+        {
+          "r": 1,
+          "c": 2
+        },
+        {
+          "r": 2,
+          "c": 2
+        },
+        {
+          "r": 3,
+          "c": 2
+        }
       ],
-      "tips": "유명한 게임(마인크래프트, 로블록스)의 규칙을 분석해봐요. 게임을 '만드는 눈'으로 보면 다르게 보여요 👀",
-      "stickers": 1
+      "maxCommands": 12,
+      "allowRepeat": false,
+      "preset": [
+        "R",
+        "R",
+        "D",
+        "D",
+        "D",
+        "D",
+        "R",
+        "R",
+        "R"
+      ],
+      "solution": [
+        "R",
+        "D",
+        "D",
+        "D",
+        "D",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R"
+      ]
     },
     {
       "id": 8,
+      "type": "puzzle",
+      "difficulty": 5,
+      "category": "optimization",
+      "title": "최단 경로 도전!",
       "emoji": "🏆",
-      "title": "자유 주제 프로젝트 발표",
-      "description": "지금까지 배운 모든 것을 활용해서 나만의 프로젝트를 완성하고 가족에게 발표해봐요! 어떤 언어나 도구도 OK!",
-      "tool": "자유",
-      "toolUrl": null,
-      "guide": [
-        "7단계 기획서를 바탕으로 실제로 만들어봐요",
-        "Scratch, Code.org, Python 중 원하는 도구를 골라요",
-        "완성된 작품에 제목과 설명을 붙여요",
-        "가족 앞에서 어떻게 만들었는지 설명해봐요",
-        "다음에 더 발전시키고 싶은 부분을 말해봐요!"
+      "description": "가장 적은 명령으로 별까지 가봐요! 반복 블록을 잘 활용하면 10개 이하로 할 수 있어요!",
+      "tip": "반복 블록을 여러 번 써도 돼요!",
+      "grid": {
+        "cols": 8,
+        "rows": 7
+      },
+      "start": {
+        "r": 0,
+        "c": 0
+      },
+      "goal": {
+        "r": 6,
+        "c": 7
+      },
+      "walls": [
+        {
+          "r": 1,
+          "c": 2
+        },
+        {
+          "r": 1,
+          "c": 5
+        },
+        {
+          "r": 2,
+          "c": 2
+        },
+        {
+          "r": 2,
+          "c": 4
+        },
+        {
+          "r": 3,
+          "c": 4
+        },
+        {
+          "r": 3,
+          "c": 6
+        },
+        {
+          "r": 4,
+          "c": 1
+        },
+        {
+          "r": 4,
+          "c": 4
+        },
+        {
+          "r": 4,
+          "c": 6
+        },
+        {
+          "r": 5,
+          "c": 1
+        },
+        {
+          "r": 5,
+          "c": 3
+        }
       ],
-      "tips": "완성도보다 '내가 배운 것'이 더 중요해요. 발표하면서 스스로 얼마나 성장했는지 느껴봐요! 🦊",
-      "stickers": 1
+      "maxCommands": 16,
+      "allowRepeat": true,
+      "solution": [
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "external",
+      "difficulty": 6,
+      "category": "scratch",
+      "title": "키보드로 움직여요!",
+      "emoji": "⌨️",
+      "description": "방향키를 누르면 캐릭터가 움직이는 프로그램을 Scratch에서 만들어봐요!",
+      "tip": "이벤트 블록에서 '오른쪽 화살표 키를 눌렀을 때'를 찾아봐요!",
+      "tool": "Scratch",
+      "toolUrl": "https://scratch.mit.edu",
+      "guide": [
+        "scratch.mit.edu 에 접속해서 '만들기'를 눌러요",
+        "이벤트 블록에서 '오른쪽 화살표 키를 눌렀을 때'를 가져와요",
+        "동작 블록에서 'x좌표를 10만큼 바꾸기'를 연결해요",
+        "왼쪽(x -10), 위쪽(y +10), 아래쪽(y -10) 방향키도 똑같이 만들어요",
+        "초록 깃발을 눌러서 방향키 4개로 캐릭터가 잘 움직이는지 확인해요"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "external",
+      "difficulty": 6,
+      "category": "scratch",
+      "title": "미로 탈출 게임!",
+      "emoji": "🏃",
+      "description": "벽에 닿으면 처음으로 돌아가는 미로 탈출 게임을 Scratch로 만들어봐요!",
+      "tip": "'색에 닿았는가?' 블록으로 벽 감지를 만들 수 있어요!",
+      "tool": "Scratch",
+      "toolUrl": "https://scratch.mit.edu",
+      "guide": [
+        "배경 그리기 도구로 미로를 그려요 (벽은 파란색으로)",
+        "방향키로 캐릭터를 움직이는 코드를 9번 미션처럼 만들어요",
+        "감지 블록에서 '파란색에 닿았는가?'를 가져와요",
+        "'만약 벽에 닿으면 → 시작 위치로 이동' 코드를 반복문 안에 넣어요",
+        "출구(노란색)에 도달하면 '탈출 성공!' 메시지가 나오게 해요"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "external",
+      "difficulty": 7,
+      "category": "scratch",
+      "title": "점수·목숨·레벨 게임!",
+      "emoji": "🎮",
+      "description": "점수, 목숨, 레벨 변수를 사용해서 진짜 게임처럼 만들어봐요!",
+      "tip": "변수 블록에서 '변수 만들기'를 누르면 점수를 저장할 수 있어요!",
+      "tool": "Scratch",
+      "toolUrl": "https://scratch.mit.edu",
+      "guide": [
+        "변수 블록에서 '점수', '목숨', '레벨' 변수를 각각 만들어요",
+        "아이템(별)에 닿으면 점수가 1 올라가는 코드를 만들어요",
+        "적에 닿으면 목숨이 1 줄어드는 코드를 만들어요",
+        "목숨이 0이 되면 모든 코드를 멈추고 '게임 오버!' 메시지를 보내요",
+        "점수가 10점 이상이면 레벨이 올라가고 적이 더 빨라지게 해봐요"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "external",
+      "difficulty": 8,
+      "category": "javascript",
+      "title": "나만의 퀴즈 앱!",
+      "emoji": "❓",
+      "description": "Code.org App Lab에서 if/else를 사용해 정답을 맞히면 점수가 올라가는 퀴즈 앱을 만들어봐요!",
+      "tip": "if (answer === '정답') 처럼 '===' 기호로 두 값이 같은지 비교해요!",
+      "tool": "Code.org",
+      "toolUrl": "https://code.org/educate/applab",
+      "guide": [
+        "code.org 에 로그인하고 App Lab 프로젝트를 새로 만들어요",
+        "텍스트 레이블로 퀴즈 문제를 화면에 올리고, 입력창과 '제출' 버튼을 배치해요",
+        "'점수' 변수를 만들고 앱 시작 시 0으로 초기화해요",
+        "버튼 클릭 이벤트에서 if/else로 정답이면 점수+1, 틀리면 '다시 도전!' 텍스트를 보여줘요",
+        "퀴즈를 3문제 이상 만들고 직접 풀어서 점수가 잘 올라가는지 확인해요"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "external",
+      "difficulty": 8,
+      "category": "python",
+      "title": "Python으로 그림 그려요!",
+      "emoji": "🐢",
+      "description": "Python Turtle로 for 반복문을 사용해 멋진 도형을 그려봐요!",
+      "tip": "for i in range(4): 하면 4번 반복해요. 정사각형을 먼저 그려봐요!",
+      "tool": "Replit",
+      "toolUrl": "https://replit.com",
+      "guide": [
+        "replit.com 에 접속해서 '+ Create Repl'을 눌러요. 언어는 Python을 선택해요",
+        "import turtle 를 입력하고 t = turtle.Turtle() 로 거북이를 만들어요",
+        "for i in range(4): 반복문으로 정사각형(앞으로 100, 오른쪽으로 90)을 그려요",
+        "반복 횟수와 각도를 바꿔서 삼각형, 육각형도 그려봐요",
+        "t.color('red') 처럼 색도 바꿔서 나만의 예쁜 그림을 완성해요"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "external",
+      "difficulty": 9,
+      "category": "python",
+      "title": "나만의 게임 기획서!",
+      "emoji": "📝",
+      "description": "내가 만들고 싶은 게임을 기획해봐요! 제목, 규칙, 캐릭터, 점수 시스템을 직접 설계해요.",
+      "tip": "지금까지 배운 이벤트, 변수, 조건을 어떻게 쓸지 생각해봐요!",
+      "tool": "없음",
+      "toolUrl": "",
+      "guide": [
+        "종이나 문서에 게임 제목과 한 줄 소개를 써요",
+        "주인공 캐릭터와 적(또는 장애물)을 설명해요",
+        "게임 규칙을 3가지 이상 적어요 (어떻게 점수를 얻는지, 어떻게 지는지)",
+        "점수/목숨/레벨 시스템을 어떻게 만들지 설계해요",
+        "부모님이나 친구에게 기획서를 발표해봐요"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "external",
+      "difficulty": 10,
+      "category": "python",
+      "title": "자유 프로젝트 발표!",
+      "emoji": "🏆",
+      "description": "지금까지 배운 것을 모두 활용해서 나만의 프로젝트를 만들고 발표해봐요!",
+      "tip": "Scratch든 Python이든 Code.org든, 내가 가장 자신 있는 도구를 써요!",
+      "tool": "자유",
+      "toolUrl": "",
+      "guide": [
+        "만들 프로젝트 주제를 정해요 (게임, 애니메이션, 퀴즈, 그림 중 하나)",
+        "배운 개념 중 3가지 이상을 프로젝트에 사용해요",
+        "프로젝트를 완성하고 직접 실행해서 잘 작동하는지 확인해요",
+        "어떤 걸 만들었는지, 어떤 코드를 썼는지 설명을 준비해요",
+        "부모님 앞에서 발표하고 시연해봐요! 🎉"
+      ]
     }
   ]
 }

@@ -1,20 +1,17 @@
 /* ============================================================
    코딩 스티커 — Parent Dashboard
-   Phase 4: PIN 보호 부모 대시보드
+   Phase 4+B: PIN 보호 부모 대시보드 + 상품스티커 확인
    ============================================================ */
 
 const Parent = (() => {
 
-  /* ---- PIN 상태 (화면 전환 간 유지) ---- */
-  let _buf  = '';   // 현재 입력 버퍼
-  let _mode = 'verify';   // 'verify' | 'set-first' | 'set-confirm'
-  let _first = '';  // set-confirm 단계에서 첫 번째 입력 보관
+  let _buf   = '';
+  let _mode  = 'verify';
+  let _first = '';
 
-  /* ---- PIN 저장/조회 ---- */
-  function _getPin()      { return App.Storage.get('parentPin', null); }
-  function _hasPin()      { return !!_getPin(); }
+  function _getPin()  { return App.Storage.get('parentPin', null); }
+  function _hasPin()  { return !!_getPin(); }
 
-  /* ---- 공개: PIN 화면 진입점 ---- */
   function showPinScreen() {
     App.showScreen('parent-pin');
   }
@@ -23,8 +20,8 @@ const Parent = (() => {
      화면 1: PIN 입력 / 설정
      ============================================================ */
   App.registerScreen('parent-pin', () => {
-    _buf  = '';
-    _mode = _hasPin() ? 'verify' : 'set-first';
+    _buf   = '';
+    _mode  = _hasPin() ? 'verify' : 'set-first';
     _first = '';
 
     const isVerify = _mode === 'verify';
@@ -60,7 +57,6 @@ const Parent = (() => {
     </div>`;
   });
 
-  /* ---- 숫자/삭제 키 입력 ---- */
   function pinInput(key) {
     Sound.pinTap();
     if (key === '⌫') {
@@ -127,7 +123,6 @@ const Parent = (() => {
     }
   }
 
-  /* ---- PIN 초기화 (분실 시) ---- */
   function resetPin() {
     Sound.click();
     App.Storage.remove('parentPin');
@@ -145,8 +140,19 @@ const Parent = (() => {
   /* ============================================================
      화면 2: 부모 대시보드
      ============================================================ */
-  App.registerScreen('parent-dashboard', () => {
+  App.registerScreen('parent-dashboard', async () => {
+    await Puzzle.waitReady();
     const cardsHTML = ['fox', 'rabbit'].map(co => _renderChildCard(co)).join('');
+
+    /* 상품스티커 대기 알림 */
+    const foxPending    = Sticker.getPendingReward('fox');
+    const rabbitPending = Sticker.getPendingReward('rabbit');
+    const totalPending  = foxPending + rabbitPending;
+    const alertHTML = totalPending > 0
+      ? `<div class="pd-reward-alert">
+           🎖️ 확인 대기 중인 상품스티커가 <strong>${totalPending}개</strong> 있어요!
+         </div>`
+      : '';
 
     return `
     <div class="screen screen-parent-dashboard">
@@ -157,18 +163,10 @@ const Parent = (() => {
       </div>
 
       <div class="pd-body">
+        ${alertHTML}
+
         <div class="pd-section-label">📊 아이 현황</div>
         ${cardsHTML}
-
-        <div class="pd-section-label" style="margin-top:8px">⚙️ 보상 설정</div>
-        <div class="pd-reward-row">
-          <button class="pd-reward-btn fox-border" onclick="App.showScreen('parent-reward-settings',{course:'fox'})">
-            🦊 여우 보상
-          </button>
-          <button class="pd-reward-btn rabbit-border" onclick="App.showScreen('parent-reward-settings',{course:'rabbit'})">
-            🐰 토끼 보상
-          </button>
-        </div>
 
         <button class="pd-logout-btn" onclick="Parent.logout()">🔒 부모 모드 잠금</button>
       </div>
@@ -176,18 +174,18 @@ const Parent = (() => {
   });
 
   function _renderChildCard(co) {
-    const isFox     = co === 'fox';
-    const emoji     = isFox ? '🦊' : '🐰';
-    const name      = isFox ? '여우 코스 (아들, 초5)' : '토끼 코스 (딸, 초3)';
-    const theme     = isFox ? 'fox' : 'rabbit';
-    const completed = App.Storage.get(`completed_${co}`, []);
-    const stickers  = App.Storage.get(`totalStickers_${co}`, 0);
-    const boards    = App.Storage.get(`boardsCompleted_${co}`, 0);
-    const goal      = Sticker.getGoal(co);
-    const reward    = Sticker.getReward(co);
-    const boardProg = stickers % goal;
-    const pct       = Math.round((boardProg / goal) * 100);
-    const total     = Puzzle.getMissions(co).length;
+    const isFox      = co === 'fox';
+    const emoji      = isFox ? '🦊' : '🐰';
+    const name       = isFox ? '여우 코스 (아들, 초5)' : '토끼 코스 (딸, 초3)';
+    const theme      = isFox ? 'fox' : 'rabbit';
+    const completed  = App.Storage.get(`completed_${co}`, []);
+    const miniTotal  = Sticker.getMiniTotal(co);
+    const miniProg   = Sticker.getMiniProgress(co);
+    const rewardCount = Sticker.getRewardCount(co);
+    const pending    = Sticker.getPendingReward(co);
+    const confirmed  = Sticker.getConfirmedReward(co);
+    const pct        = Math.round((miniProg / Sticker.MINI_GOAL) * 100);
+    const total      = Puzzle.getMissions(co).length;
 
     const missionListHTML = completed.length > 0
       ? completed.map(id => {
@@ -196,12 +194,28 @@ const Parent = (() => {
         }).join('')
       : `<div class="pd-no-missions">아직 완료한 미션이 없어요 🌱</div>`;
 
+    /* 상품스티커 확인 버튼 */
+    const rewardSection = rewardCount > 0 ? `
+      <div class="pd-reward-section">
+        <div class="pd-reward-label">🎖️ 상품스티커</div>
+        <div class="pd-reward-counts">
+          <span class="pd-reward-total">총 ${rewardCount}개</span>
+          ${pending > 0 ? `<span class="pd-reward-pending">⏳ 미확인 ${pending}개</span>` : ''}
+          ${confirmed > 0 ? `<span class="pd-reward-confirmed">✅ 확인 ${confirmed}개</span>` : ''}
+        </div>
+        ${pending > 0
+          ? `<button class="pd-confirm-btn ${theme}-theme" onclick="Parent.confirmReward('${co}')">
+               🎁 선물 주고 확인하기
+             </button>`
+          : `<div class="pd-reward-done">모든 상품스티커 확인 완료 ✅</div>`}
+      </div>` : '';
+
     return `
     <div class="pd-child-card">
       <div class="pd-card-header ${theme}-bg">
         <span class="pd-card-emoji">${emoji}</span>
         <span class="pd-card-name">${name}</span>
-        <span class="pd-card-sticker-badge">⭐ ${stickers}</span>
+        <span class="pd-card-sticker-badge">⭐ ${miniTotal}</span>
       </div>
       <div class="pd-card-body">
         <div class="pd-stats">
@@ -211,27 +225,27 @@ const Parent = (() => {
           </div>
           <div class="pd-stat-divider"></div>
           <div class="pd-stat-item">
-            <div class="pd-stat-num">⭐ ${stickers}</div>
+            <div class="pd-stat-num">⭐ ${miniTotal}</div>
             <div class="pd-stat-lbl">누적 스티커</div>
           </div>
           <div class="pd-stat-divider"></div>
           <div class="pd-stat-item">
-            <div class="pd-stat-num">🏆 ${boards}</div>
-            <div class="pd-stat-lbl">판 완성</div>
+            <div class="pd-stat-num">🎖️ ${rewardCount}</div>
+            <div class="pd-stat-lbl">상품스티커</div>
           </div>
         </div>
 
         <div class="pd-board-progress">
           <div class="pd-board-label">
             <span>현재 스티커판</span>
-            <span>${boardProg} / ${goal}개</span>
+            <span>${miniProg} / ${Sticker.MINI_GOAL}개</span>
           </div>
           <div class="pd-prog-track">
             <div class="pd-prog-fill ${theme}-theme" style="width:${pct}%"></div>
           </div>
         </div>
 
-        ${reward ? `<div class="pd-reward-display">🎁 목표 보상: <strong>${reward}</strong></div>` : ''}
+        ${rewardSection}
 
         <details class="pd-detail">
           <summary class="pd-detail-summary">완료한 미션 (${completed.length}개) ▾</summary>
@@ -241,69 +255,18 @@ const Parent = (() => {
     </div>`;
   }
 
-  /* ============================================================
-     화면 3: 부모용 보상 설정 (대시보드로 복귀)
-     ============================================================ */
-  App.registerScreen('parent-reward-settings', (data) => {
-    const co          = (data && data.course) || 'fox';
-    const bgClass     = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
-    const courseEmoji = co === 'fox' ? '🦊' : '🐰';
-    const goal        = Sticker.getGoal(co);
-    const reward      = Sticker.getReward(co);
-
-    return `
-    <div class="screen screen-reward-settings">
-      <div class="rs-header ${bgClass}">
-        <button class="btn-back" onclick="App.showScreen('parent-dashboard')" aria-label="뒤로">←</button>
-        <div class="rs-header-title">${courseEmoji} 보상 설정</div>
-        <div></div>
-      </div>
-
-      <div class="rs-body">
-        <div class="rs-card">
-          <div class="rs-section-title">⭐ 스티커 목표 수</div>
-          <p class="rs-desc">몇 개를 모으면 보상을 받을까요?</p>
-          <div class="rs-goal-row">
-            <button class="rs-goal-btn" onclick="Parent.adjustGoal('${co}',-1)">−</button>
-            <div class="rs-goal-display" id="rs-goal-val">${goal}</div>
-            <button class="rs-goal-btn" onclick="Parent.adjustGoal('${co}',1)">+</button>
-          </div>
-          <p class="rs-goal-range">5 ~ 30개 설정 가능</p>
-        </div>
-
-        <div class="rs-card">
-          <div class="rs-section-title">🎁 보상 내용</div>
-          <p class="rs-desc">목표를 달성하면 어떤 보상을 줄까요?</p>
-          <input id="rs-reward-input" class="rs-input" type="text"
-            maxlength="30" placeholder="예: 치킨 먹기, 용돈 2,000원..."
-            value="${reward}" />
-        </div>
-
-        <button class="btn-primary rs-save-btn" onclick="Parent.saveRewardSettings('${co}')">
-          💾 저장하기
-        </button>
-      </div>
-    </div>`;
-  });
-
-  /* ---- 보상 설정 인터랙션 ---- */
-  function adjustGoal(course, delta) {
-    Sticker.setGoal(course, Sticker.getGoal(course) + delta);
-    const el = document.getElementById('rs-goal-val');
-    if (el) el.textContent = Sticker.getGoal(course);
-    Sound.click();
+  /* 부모 상품스티커 확인 */
+  function confirmReward(course) {
+    const ok = Sticker.confirmReward(course);
+    if (ok) {
+      Sound.missionComplete();
+      App.spawnParticles(['🎖️','🎁','✨','⭐'], 10);
+      App.showToast('선물 확인 완료! 아이에게 선물을 줘요 🎁');
+      /* 카드 즉시 갱신 */
+      setTimeout(() => App.showScreen('parent-dashboard'), 800);
+    }
   }
 
-  function saveRewardSettings(course) {
-    const el = document.getElementById('rs-reward-input');
-    Sticker.setReward(course, el ? el.value.trim() : '');
-    if (typeof DB !== 'undefined') DB.pushSettings();
-    Sound.missionComplete();
-    App.showToast('저장했어요! 🎉');
-    setTimeout(() => App.showScreen('parent-dashboard'), 800);
-  }
-
-  /* ---- 잠금 ---- */
   function logout() {
     Sound.click();
     App.showScreen('mission-map');
@@ -314,9 +277,9 @@ const Parent = (() => {
     showPinScreen,
     pinInput,
     resetPin,
-    adjustGoal,
-    saveRewardSettings,
+    confirmReward,
     logout,
   };
 
 })();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

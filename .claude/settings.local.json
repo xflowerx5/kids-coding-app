@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Google_Drive__search_files",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "PowerShell(Get-ChildItem \"F:\\\\coding\\\\kids-coding-app\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object @{N='파일';E={$_.FullName.Replace\\('F:\\\\coding\\\\kids-coding-app\\\\',''\\)}} , @{N='크기';E={\"$\\([math]::Round\\($_.Length/1KB,1\\)\\)KB\"}} | Format-Table -AutoSize)",
+      "PowerShell(Start-Process python -ArgumentList \"-m\", \"http.server\", \"8080\", \"--directory\", \"f:\\\\coding\\\\kids-coding-app\" -WindowStyle Hidden -PassThru)",
+      "PowerShell($res = Invoke-WebRequest -Uri \"http://localhost:8080/\" -UseBasicParsing -TimeoutSec 5; \"HTTP $\\($res.StatusCode\\) — $\\($res.Content.Length\\) bytes\")",
+      "PowerShell($res = Invoke-WebRequest -Uri \"http://localhost:8080/js/puzzle.js\" -UseBasicParsing -TimeoutSec 5; \"HTTP $\\($res.StatusCode\\) — $\\($res.Content.Length\\) bytes\")",
+      "Bash(gh auth *)",
+      "PowerShell(gh auth status 2>&1)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git commit -m 'fix: PWA 설치 안내 화면 미표시 버그 수정 *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

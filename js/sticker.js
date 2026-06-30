@@ -1,88 +1,90 @@
 /* ============================================================
    코딩 스티커 — Sticker System
-   Phase 3: 스티커판 + 보상 UI
+   Phase B: 미니스티커 30개 → 상품스티커 1개
    ============================================================ */
 
 const Sticker = (() => {
 
-  const DEFAULT_GOAL = 10;
+  const MINI_GOAL = 30; // 미니스티커 30개 = 상품스티커 1개
 
-  /* ---- 설정 헬퍼 ---- */
-  function getGoal(course) {
-    return App.Storage.get(`stickerGoal_${course}`, DEFAULT_GOAL);
+  /* ---- 스티커 데이터 접근 ---- */
+  function getMiniTotal(course) {
+    return App.Storage.get(`totalStickers_${course}`, 0);
   }
-  function setGoal(course, n) {
-    App.Storage.set(`stickerGoal_${course}`, Math.max(5, Math.min(30, n)));
+  function getMiniProgress(course) {
+    return getMiniTotal(course) % MINI_GOAL;
   }
-  function getReward(course) {
-    return App.Storage.get(`rewardText_${course}`, '');
+  function getRewardCount(course) {
+    return App.Storage.get(`rewardStickers_${course}`, 0);
   }
-  function setReward(course, text) {
-    App.Storage.set(`rewardText_${course}`, text);
+  function getPendingReward(course) {
+    return App.Storage.get(`pendingReward_${course}`, 0);
   }
-  function getBoardsCompleted(course) {
-    return App.Storage.get(`boardsCompleted_${course}`, 0);
-  }
-
-  /* 현재 스티커판에서 모은 스티커 수 */
-  function getBoardProgress(course) {
-    const total = App.Storage.get(`totalStickers_${course}`, 0);
-    const goal  = getGoal(course);
-    return total % goal;
+  function getConfirmedReward(course) {
+    return App.Storage.get(`confirmedReward_${course}`, 0);
   }
 
-  /* 새 누적 합계가 스티커판을 완성시키는지 확인 */
-  function checkBoardComplete(course, newTotal) {
-    const goal = getGoal(course);
-    return newTotal > 0 && newTotal % goal === 0;
+  /* 부모가 상품스티커 확인 → pending 차감, confirmed 증가 */
+  function confirmReward(course) {
+    const pending = getPendingReward(course);
+    if (pending <= 0) return false;
+    App.Storage.set(`pendingReward_${course}`, pending - 1);
+    App.Storage.set(`confirmedReward_${course}`, getConfirmedReward(course) + 1);
+    if (typeof DB !== 'undefined') DB.pushCourse(course);
+    return true;
   }
 
-  /* ---- 스티커 셀 그리드 HTML 생성 ---- */
-  function renderBoardGrid(course, filledCount, goalCount, animate) {
-    const cols   = Math.min(5, goalCount);
+  /* ---- 미니스티커 격자 HTML ---- */
+  function renderMiniBoard(course, animate) {
+    const filled = getMiniProgress(course) || (getMiniTotal(course) > 0 && getMiniTotal(course) % MINI_GOAL === 0 ? MINI_GOAL : getMiniProgress(course));
+    const cols   = 6; // 6×5 = 30
+
     let cells = '';
-    for (let i = 0; i < goalCount; i++) {
-      const filled     = i < filledCount;
-      const justEarned = animate && i === filledCount - 1;
-      cells += `<div class="sb-cell ${filled ? `sb-cell-filled ${course}-theme` : 'sb-cell-empty'} ${justEarned ? 'anim-pop' : ''}">${filled ? '⭐' : ''}</div>`;
+    for (let i = 0; i < MINI_GOAL; i++) {
+      const isFilled   = i < filled;
+      const justEarned = animate && i === filled - 1;
+      cells += `<div class="sb-cell ${isFilled ? `sb-cell-filled ${course}-theme` : 'sb-cell-empty'} ${justEarned ? 'anim-pop' : ''}">${isFilled ? '⭐' : ''}</div>`;
     }
     return `<div class="sb-grid" style="--sb-cols:${cols}">${cells}</div>`;
   }
 
   /* ============================================================
-     화면: 스티커판
+     화면: 스티커판 (미니스티커 30칸)
      ============================================================ */
   App.registerScreen('sticker-board', (data) => {
-    const co       = (data && data.course) || App.Storage.get('selectedCourse', 'fox');
-    const justEarned = !!(data && data.justEarned);
-    const bgClass  = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
+    const co          = (data && data.course) || App.Storage.get('selectedCourse', 'fox');
+    const justEarned  = !!(data && data.justEarned);
+    const bgClass     = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
     const courseEmoji = co === 'fox' ? '🦊' : '🐰';
     const courseName  = co === 'fox' ? '여우 코스' : '토끼 코스';
-    const goal    = getGoal(co);
-    const filled  = justEarned
-      ? (App.Storage.get(`totalStickers_${co}`, 0) % goal || goal)
-      : getBoardProgress(co);
-    const reward  = getReward(co);
-    const boards  = getBoardsCompleted(co);
-    const pct     = Math.round((filled / goal) * 100);
 
-    const gridHTML    = renderBoardGrid(co, filled, goal, justEarned);
-    const boardsHTML  = boards > 0
-      ? `<div class="sb-boards-done">🏆 스티커판 ${boards}번 완성했어요!</div>`
-      : '';
-    const rewardHTML  = reward
-      ? `<div class="sb-reward-box">
-           <div class="sb-reward-label">🎁 목표 보상</div>
-           <div class="sb-reward-text">${reward}</div>
+    const miniProgress = getMiniProgress(co);
+    const rewardCount  = getRewardCount(co);
+    const pending      = getPendingReward(co);
+    const confirmed    = getConfirmedReward(co);
+    const pct          = Math.round((miniProgress / MINI_GOAL) * 100);
+
+    if (justEarned) setTimeout(() => Sound.stickerEarn(), 80);
+
+    const rewardHTML = rewardCount > 0
+      ? `<div class="sb-reward-section">
+           <div class="sb-reward-title">🎖️ 획득한 상품스티커</div>
+           <div class="sb-reward-stickers">
+             ${Array.from({ length: rewardCount }, (_, i) => {
+               const isConfirmed = i < confirmed;
+               return `<div class="sb-reward-item ${isConfirmed ? 'sb-reward-confirmed' : 'sb-reward-pending'}"
+                            title="${isConfirmed ? '부모님 확인 완료' : '부모님 확인 대기 중'}">
+                 🎖️<span class="sb-reward-status">${isConfirmed ? '✅' : '⏳'}</span>
+               </div>`;
+             }).join('')}
+           </div>
+           ${pending > 0
+             ? `<p class="sb-reward-hint">⏳ 부모님께 상품스티커를 보여드리고 선물을 받아요!</p>`
+             : `<p class="sb-reward-hint sb-reward-all-done">✅ 모든 상품스티커를 확인받았어요!</p>`}
          </div>`
-      : `<div class="sb-reward-box sb-reward-empty">
-           <div class="sb-reward-label">🎁 보상을 아직 설정하지 않았어요!</div>
-           <button class="btn-ghost sb-settings-btn" onclick="App.showScreen('reward-settings',{course:'${co}'})">설정하러 가기 →</button>
+      : `<div class="sb-reward-empty-hint">
+           <p>⭐ 30개를 모으면 🎖️ 상품스티커를 받아요!</p>
          </div>`;
-
-    if (justEarned) {
-      setTimeout(() => Sound.stickerEarn(), 80);
-    }
 
     return `
     <div class="screen screen-sticker-board">
@@ -97,7 +99,7 @@ const Sticker = (() => {
 
       <div class="sb-body">
         <div class="sb-progress-label">
-          <span class="sb-count-text">⭐ <strong>${filled}</strong> / ${goal}</span>
+          <span class="sb-count-text">⭐ <strong>${miniProgress}</strong> / ${MINI_GOAL}</span>
           <span class="sb-pct-text">${pct}%</span>
         </div>
         <div class="sb-progress-track">
@@ -105,40 +107,26 @@ const Sticker = (() => {
         </div>
 
         <div class="sb-grid-wrap">
-          ${gridHTML}
+          ${renderMiniBoard(co, justEarned)}
         </div>
 
-        ${boardsHTML}
         ${rewardHTML}
 
         <div class="sb-btns">
           <button class="btn-primary" onclick="App.showScreen('mission-map')">미션 계속하기 →</button>
-          <button class="btn-ghost sb-setting-link" onclick="App.showScreen('reward-settings',{course:'${co}'})">⚙️ 보상 설정</button>
         </div>
       </div>
     </div>`;
   });
 
   /* ============================================================
-     화면: 스티커판 완성 축하
+     화면: 상품스티커 획득 축하 (미니스티커 30개 달성)
      ============================================================ */
   App.registerScreen('board-complete', (data) => {
-    const co       = (data && data.course) || App.Storage.get('selectedCourse', 'fox');
-    const bgClass  = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
-    const charEmoji = co === 'fox' ? '🦊' : '🐰';
-    const goal     = getGoal(co);
-    const reward   = getReward(co);
-
-    const rewardHTML = reward
-      ? `<div class="bc-reward-box">
-           <div class="bc-reward-label">🎁 오늘의 보상!</div>
-           <div class="bc-reward-text">${reward}</div>
-         </div>`
-      : `<div class="bc-reward-box bc-reward-empty">
-           <div class="bc-reward-text">부모님과 함께 보상을 정해봐요! 🎁</div>
-         </div>`;
-
-    const fullGrid = renderBoardGrid(co, goal, goal, false);
+    const co          = (data && data.course) || App.Storage.get('selectedCourse', 'fox');
+    const bgClass     = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
+    const charEmoji   = co === 'fox' ? '🦊' : '🐰';
+    const rewardCount = data?.rewardCount || getRewardCount(co);
 
     setTimeout(() => {
       Sound.boardComplete();
@@ -148,6 +136,13 @@ const Sticker = (() => {
         setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.9, y: 0.6 } }), 900);
       }
     }, 300);
+
+    /* 완성된 30칸 그리드 */
+    let fullCells = '';
+    for (let i = 0; i < MINI_GOAL; i++) {
+      fullCells += `<div class="sb-cell sb-cell-filled ${co}-theme">⭐</div>`;
+    }
+    const fullGrid = `<div class="sb-grid" style="--sb-cols:6">${fullCells}</div>`;
 
     return `
     <div class="screen screen-board-complete ${bgClass}">
@@ -163,98 +158,44 @@ const Sticker = (() => {
       <div class="bc-content">
         <div class="bc-char anim-pop">${charEmoji}</div>
         <h1 class="bc-title anim-slideUp">스티커판 완성!</h1>
-        <p class="bc-subtitle anim-slideUp" style="animation-delay:0.08s">🎉 부모님께 보여드려요! 🎉</p>
+        <p class="bc-subtitle anim-slideUp" style="animation-delay:0.08s">
+          ⭐ 30개를 모두 모았어요!
+        </p>
 
-        <div class="bc-mini-grid-wrap anim-pop" style="animation-delay:0.15s">
+        <div class="bc-reward-box anim-pop" style="animation-delay:0.15s">
+          <div class="bc-reward-icon">🎖️</div>
+          <div class="bc-reward-title">상품스티커 획득!</div>
+          <div class="bc-reward-count">총 ${rewardCount}개 보유</div>
+          <p class="bc-reward-desc">부모님께 이 화면을 보여드리고<br>선물을 받아요! 🎁</p>
+        </div>
+
+        <div class="bc-mini-grid-wrap anim-pop" style="animation-delay:0.2s">
           ${fullGrid}
         </div>
 
-        ${rewardHTML}
-
         <button class="bc-next-btn anim-slideUp" style="animation-delay:0.3s"
                 onclick="App.showScreen('mission-map')">
-          다음 스티커판 시작! 🚀
+          새 스티커판 시작! 🚀
+        </button>
+        <button class="btn-ghost bc-sticker-btn anim-slideUp" style="animation-delay:0.38s"
+                onclick="App.showScreen('sticker-board',{course:'${co}'})">
+          🎖️ 내 상품스티커 보기
         </button>
       </div>
     </div>`;
   });
-
-  /* ============================================================
-     화면: 보상 설정
-     ============================================================ */
-  App.registerScreen('reward-settings', (data) => {
-    const co      = (data && data.course) || App.Storage.get('selectedCourse', 'fox');
-    const bgClass = co === 'fox' ? 'fox-bg' : 'rabbit-bg';
-    const courseEmoji = co === 'fox' ? '🦊' : '🐰';
-    const goal    = getGoal(co);
-    const reward  = getReward(co);
-
-    return `
-    <div class="screen screen-reward-settings">
-      <div class="rs-header ${bgClass}">
-        <button class="btn-back" onclick="App.showScreen('sticker-board',{course:'${co}'})" aria-label="뒤로">←</button>
-        <div class="rs-header-title">${courseEmoji} 보상 설정</div>
-        <div></div>
-      </div>
-
-      <div class="rs-body">
-        <div class="rs-card">
-          <div class="rs-section-title">⭐ 스티커 목표 수</div>
-          <p class="rs-desc">몇 개를 모으면 보상을 받을까요?</p>
-          <div class="rs-goal-row">
-            <button class="rs-goal-btn" onclick="Sticker.adjustGoal('${co}',-1)">−</button>
-            <div class="rs-goal-display" id="rs-goal-val">${goal}</div>
-            <button class="rs-goal-btn" onclick="Sticker.adjustGoal('${co}',1)">+</button>
-          </div>
-          <p class="rs-goal-range">5 ~ 30개 설정 가능</p>
-        </div>
-
-        <div class="rs-card">
-          <div class="rs-section-title">🎁 보상 내용</div>
-          <p class="rs-desc">목표를 달성하면 어떤 보상을 줄까요?</p>
-          <input id="rs-reward-input" class="rs-input" type="text"
-            maxlength="30" placeholder="예: 치킨 먹기, 용돈 2,000원..."
-            value="${reward}" />
-        </div>
-
-        <button class="btn-primary rs-save-btn" onclick="Sticker.saveSettings('${co}')">
-          💾 저장하기
-        </button>
-      </div>
-    </div>`;
-  });
-
-  /* ---- 목표 수 조정 (보상 설정 화면 내) ---- */
-  function adjustGoal(course, delta) {
-    const current = getGoal(course);
-    const next    = Math.max(5, Math.min(30, current + delta));
-    setGoal(course, next);
-    const el = document.getElementById('rs-goal-val');
-    if (el) el.textContent = next;
-    Sound.click();
-  }
-
-  /* ---- 설정 저장 ---- */
-  function saveSettings(course) {
-    const rewardEl = document.getElementById('rs-reward-input');
-    const reward   = rewardEl ? rewardEl.value.trim() : '';
-    setReward(course, reward);
-    if (typeof DB !== 'undefined') DB.pushSettings();
-    Sound.missionComplete();
-    App.showToast('저장했어요! 🎉');
-    setTimeout(() => App.showScreen('sticker-board', { course }), 800);
-  }
 
   /* ---- 공개 API ---- */
   return {
-    getGoal, setGoal,
-    getReward, setReward,
-    getBoardsCompleted,
-    getBoardProgress,
-    checkBoardComplete,
-    renderBoardGrid,
-    adjustGoal,
-    saveSettings,
+    MINI_GOAL,
+    getMiniTotal,
+    getMiniProgress,
+    getRewardCount,
+    getPendingReward,
+    getConfirmedReward,
+    confirmReward,
+    renderMiniBoard,
   };
 
 })();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
