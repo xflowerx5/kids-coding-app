@@ -596,8 +596,16 @@ a {
   border: 1px solid rgba(255,255,255,0.35);
 }
 
-/* 시작하기 버튼 */
-.btn-splash-start {
+/* 아이/부모 진입 버튼 그룹 */
+.splash-entry-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-splash-child {
   background: white;
   color: #7C3AED;
   border-radius: var(--radius-full);
@@ -607,15 +615,31 @@ a {
   letter-spacing: -0.3px;
   box-shadow: var(--shadow-xl), 0 0 40px rgba(255, 255, 255, 0.35);
   width: 100%;
-  max-width: 320px;
   transition: transform var(--transition-bounce), box-shadow var(--transition-fast);
   animation: pulseScale 3s ease-in-out infinite;
 }
 
-.btn-splash-start:active {
+.btn-splash-child:active {
   transform: scale(0.94);
   box-shadow: var(--shadow-md);
   animation: none;
+}
+
+.btn-splash-parent {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: var(--radius-full);
+  padding: 13px 32px;
+  font-size: var(--text-base);
+  font-weight: 700;
+  width: 100%;
+  transition: transform var(--transition-bounce), background var(--transition-fast);
+}
+
+.btn-splash-parent:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .splash-hint {
@@ -1905,19 +1929,4 @@ html {
 
   /* 스플래시 */
   .splash-characters { flex-direction: column; gap: var(--space-sm); }
-  .char-card { flex-direction: row; padding: var(--space-sm); gap: var(--space-sm); }
-  .char-card svg { width: 52px; }
-
-  /* 스티커 그리드: 최대 4열 */
-  .sb-grid { grid-template-columns: repeat(min(var(--sb-cols, 5), 4), 1fr) !important; }
-
-  /* 미션맵 */
-  .mm-list { padding: var(--space-sm); gap: var(--space-sm); }
-  .mission-card { padding: var(--space-sm); }
-
-  /* 보상 설정 목표 수 */
-  .rs-goal-display { font-size: var(--text-3xl); min-width: 50px; }
-
-  /* 미션 완료/보드 완성 데코 줄이기 */
-  .mc-star-burst, .bc-deco { font-size: 1.2rem; }
-}
+  .char-card { flex-direction: row; paddi

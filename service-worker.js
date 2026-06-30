@@ -1,4 +1,4 @@
-const CACHE_NAME = 'coding-sticker-v7';
+const CACHE_NAME = 'coding-sticker-v8';
 
 const STATIC_ASSETS = [
   './',
@@ -16,6 +16,8 @@ const STATIC_ASSETS = [
   './missions/rabbit.json',
   './icons/icon.svg',
   './icons/icon-maskable.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   './icons/fox.svg',
   './icons/rabbit.svg',
 ];
@@ -58,5 +60,4 @@ self.addEventListener('fetch', (event) => {
       return fetch(event.request).then(response => {
         if (response.ok) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        
+          caches.open(CACHE_NAME).then

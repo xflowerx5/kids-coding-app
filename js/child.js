@@ -91,6 +91,15 @@ const Child = (() => {
     Sound.click();
   }
 
+  function _afterCodeSet() {
+    const mode = App.Storage.get('_entryMode', 'child');
+    if (mode === 'parent') {
+      App.showScreen('parent-pin');
+    } else {
+      App.showScreen('character-select');
+    }
+  }
+
   function confirmNewCode() {
     const code = App.Storage.get('pendingCode') || document.getElementById('fc-code-text')?.textContent?.trim();
     if (!code) return;
@@ -98,7 +107,7 @@ const Child = (() => {
     App.Storage.set('familyCode', code);
     App.Storage.remove('pendingCode');
     if (typeof DB !== 'undefined') { DB.init(code); DB.initFamily(); }
-    App.showScreen('character-select');
+    _afterCodeSet();
   }
 
   function confirmInputCode() {
@@ -115,7 +124,7 @@ const Child = (() => {
     App.Storage.set('familyCode', val);
     App.Storage.remove('pendingCode');
     if (typeof DB !== 'undefined') { DB.init(val); DB.initFamily(); }
-    App.showScreen('character-select');
+    _afterCodeSet();
   }
 
   /* ============================================================
@@ -444,7 +453,4 @@ const Child = (() => {
       }
 
       setTimeout(() => {
-        /* 미니스티커 30개 달성 → 상품스티커 지급 */
-        if (newTotal % 30 === 0) {
-          const rewardCount = Math.floor(newTotal / 30);
-          App.Storage.set(`rewardStickers_${course}`, 
+        /* 미니스티커 30개 달�
